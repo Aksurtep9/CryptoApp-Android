@@ -3,28 +3,32 @@
 Információk [itt](https://viauac00.github.io/laborok/hf)
 
 ## Mobil- és webes szoftverek
-### [Dátum]
-### [Alkalmazás neve]
-### [Teljes név] - ([Neptun kód])
-### [e-mail cím] 
-### Laborvezető: [Laborvezető neve]
+### [2022.10.23.]
+### [Crypto Demo]
+### [Petruska Bence] - ([JP5JDU])
+### [bence.petruska@gmail.com]
+### Laborvezető: [Telek Benjámin Márk]
 
 ## Bemutatás
 
-Az alkalmazás rövid, 2-3 mondatos bemutatása. Honnan az ötlet, mi szülte az igényt, ki lehetne a célközönség.
-A laboron és előadáson bemutatott alkalmazásokat nem lehet házi feladatnak választani.
+Az alkalmazás egy kezdetleges egyszerű kripto számlát és tőzsdét valósít meg. Demo pénzzel vehetünk az általunk kiválasztott kriptovalutát és az általunk vásárolt kriptovalutákat el is adhatjuk. 
+A portfoliónk profitját/veszteségét is tudjuk követni az alkalmazással.
 
 ## Főbb funkciók
 
-Az alkalmazás minden funkciójára kiterjedő leírás (röviden, lényegre törően). Legyen egyértelműen eldönthető, hogy az adott funkció implementálva van-e!
-Pl.: Az alkalmazással lehetőség van tételek felvételére és tárolására, valamint azok rendezett megjelenítésére, illetve frissítésre X hálózati hívás segítségével.
-
+Az alkalmazásunk kezdőképernyőjén jelenik meg a "watchlist", amin az általunk követett kriptovaluták ára van megjelenítve, frissítésre az árak frissülnek.
+A watchlistbe felvehetünk, illetve törölhetünk is róla valutákat A cryptokról megjelenő adatokat a "coinmarketcap" nevezetű crypto ár követő oldal API-ján keresztül éri el az alkalmazás. 
+A watchlist listában egy kriptovalutára rákattintva van lehetőségünk venni/eladni, megadva annak a mennyiségét is. Az összeg hozzáadás menüben van lehetőségünk további összeget hozzárendelni a fiókhoz. 
+Profilunk nézetében követni tudjuk egy grafikon kimutatásunk a portfoliónk aktuális állását.
+A profilunkat és a watchlist-et is perzisztens adattárolási módszerekkel tárolja. 
+A profilunkon az összes eddigi feltöltött tőke mennyiségét és az általunk birtokolt kriptovalutákat és azok mennyiségét tárolja.
+A watchlisten pedig az adott kripto TAG-jét és az aktuális árát tárolja.
 ## Választott technológiák:
 
-- (UI)
-- (fragmentek)
-- (RecyclerView)
-- (Perzisztens adattárolás)
+- Perzisztens adattárolás
+- fragmentek
+- RecyclerView
+- API hívással kapcsolatos technológiák (Retrofit, GSON, ...)
 
 
 #Házi feladat dokumentáció (ha nincs, ez a fejezet törölhető)
