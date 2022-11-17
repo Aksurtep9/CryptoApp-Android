@@ -20,18 +20,21 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar)
 
         database = CryptoCoinDatabase.getDatabase(applicationContext)
 
+        adapter = CryptoAdapter(this)
         binding.fab.setOnClickListener {
-            //TODO
+            adapter.addItem(CryptoCoin(1,"Bitcoin", "BTC", 0, 18000, true))
+            adapter.addItem(CryptoCoin(1,"Ethereum", "ETH", 0, 1300, true))
         }
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
         adapter = CryptoAdapter(this)
+        //adapter.addItem(CryptoCoin(1,"Bitcoin", "BTC", 0, 18000, true))
         binding.rvMain.layoutManager = LinearLayoutManager(this)
         binding.rvMain.adapter = adapter
         loadItemsInBackground()
