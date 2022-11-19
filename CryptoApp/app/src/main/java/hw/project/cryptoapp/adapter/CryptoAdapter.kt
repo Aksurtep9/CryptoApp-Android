@@ -1,12 +1,15 @@
 package hw.project.cryptoapp.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import hw.project.cryptoapp.data.CryptoCoin
 import hw.project.cryptoapp.databinding.ItemCryptoListBinding
 
-class CryptoAdapter(private val listener: CryptoItemClickListener) :
+class CryptoAdapter(private val listener: CryptoItemClickListener, private val context: Context) :
     RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>(){
 
     private val items = mutableListOf<CryptoCoin>()
@@ -19,6 +22,10 @@ class CryptoAdapter(private val listener: CryptoItemClickListener) :
         holder.binding.tvName.text = cryptoItem.name
         holder.binding.tvTag.text = cryptoItem.tag
         holder.binding.tvPrice.text = "${cryptoItem.price}"
+
+        Glide.with(context).load("https://s2.coinmarketcap.com/static/img/coins/64x64/${cryptoItem.apiID}.png")
+            .transition(DrawableTransitionOptions().crossFade())
+            .into(holder.binding.ivIcon)
 
         holder.binding.cbIsSelected.setOnCheckedChangeListener { buttonView, isChecked ->
             cryptoItem.isChecked = isChecked

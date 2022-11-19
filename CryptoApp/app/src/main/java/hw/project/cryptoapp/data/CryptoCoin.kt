@@ -10,7 +10,7 @@ data class CryptoCoin(
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "tag") var tag: String,
     @ColumnInfo(name = "apiID") var apiID: Int,
-    @ColumnInfo(name = "price") var price: Int,
+    @ColumnInfo(name = "price") var price: Double,
     @ColumnInfo(name = "isChecked") var isChecked: Boolean,
 )
 

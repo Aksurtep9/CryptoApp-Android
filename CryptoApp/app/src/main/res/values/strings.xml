@@ -3,4 +3,8 @@
     <string name="price">0</string>
     <string name="TAG">BTC</string>
     <string name="name" />
+    <string name="new_crypto_hint">symbol</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <string name="new_crypto">New Crypto</string>
 </resources>

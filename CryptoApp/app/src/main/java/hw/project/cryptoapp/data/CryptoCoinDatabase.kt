@@ -16,7 +16,9 @@ abstract class CryptoCoinDatabase : RoomDatabase() {
                 applicationContext,
                 CryptoCoinDatabase::class.java,
                 "cryptocoin"
-            ).build();
+            )
+                .fallbackToDestructiveMigration()
+                .build();
         }
     }
 }
