@@ -21,7 +21,13 @@ class CryptoAdapter(private val listener: CryptoItemClickListener, private val c
         val cryptoItem = items[position]
         holder.binding.tvName.text = cryptoItem.name
         holder.binding.tvTag.text = cryptoItem.tag
-        holder.binding.tvPrice.text = "${cryptoItem.price}"
+        holder.binding.tvPrice.text = String.format("%.3f $", cryptoItem.price)
+
+        holder.binding.ibRemove.setOnClickListener {
+            notifyItemRemoved(position)
+            listener.onItemDeleted(items[position])
+            items.removeAt(position)
+        }
 
         Glide.with(context).load("https://s2.coinmarketcap.com/static/img/coins/64x64/${cryptoItem.apiID}.png")
             .transition(DrawableTransitionOptions().crossFade())
@@ -48,6 +54,7 @@ class CryptoAdapter(private val listener: CryptoItemClickListener, private val c
 
     interface CryptoItemClickListener {
         fun onItemChanged(item: CryptoCoin)
+        fun onItemDeleted(item: CryptoCoin)
     }
 
     inner class CryptoViewHolder(val binding: ItemCryptoListBinding) : RecyclerView.ViewHolder(binding.root)

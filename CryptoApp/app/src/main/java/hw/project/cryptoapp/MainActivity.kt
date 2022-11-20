@@ -1,26 +1,25 @@
 package hw.project.cryptoapp
 
-import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import hw.project.cryptoapp.adapter.CryptoAdapter
 import hw.project.cryptoapp.data.CryptoCoin
 import hw.project.cryptoapp.data.CryptoCoinDatabase
+import hw.project.cryptoapp.data.PortfolioDatabase
 import hw.project.cryptoapp.databinding.ActivityMainBinding
 import hw.project.cryptoapp.network.CryptoData
 import hw.project.cryptoapp.network.CryptoDataHolder
 import hw.project.cryptoapp.network.Data
-import hw.project.cryptoapp.network.NetworkManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import kotlin.concurrent.thread
 
-class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener, AddCryptoDialogFragment.AddCryptoDialogListener, CryptoDataHolder {
+class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
+    AddCryptoDialogFragment.AddCryptoDialogListener,
+    AddAssetDialogFragment.AddAssetDialogListener,
+    CryptoDataHolder{
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var database: CryptoCoinDatabase
@@ -37,13 +36,14 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         adapter = CryptoAdapter(this, this@MainActivity)
 
 
+
         initFab()
+        initProf()
         loadCryptoData()
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
-
         adapter = CryptoAdapter(this, this@MainActivity)
         binding.rvMain.layoutManager = LinearLayoutManager(this)
         binding.rvMain.adapter = adapter
@@ -65,10 +65,22 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         }
     }
 
+    private fun initProf() {
+        binding.portfolio.setOnClickListener {
+            PortfolioFragment().show(supportFragmentManager,PortfolioFragment::class.java.simpleName)
+        }
+    }
+
     override fun onItemChanged(item: CryptoCoin) {
         thread {
             database.cryptoCoinDao().update(item)
             Log.d("MainActivity", "CryptoItem update was successful")
+        }
+    }
+
+    override fun onItemDeleted(item: CryptoCoin) {
+        thread{
+            database.cryptoCoinDao().deleteItem(item)
         }
     }
 
@@ -89,8 +101,10 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         thread {
             val id = database.cryptoCoinDao().insert(coin)
             coin.id = id
+            runOnUiThread {
+                adapter.addItem(coin!!)
+            }
         }
-            adapter.addItem(coin!!)
 
     }
 
@@ -99,6 +113,7 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
     }
 
     private fun loadCryptoData() {
+        /*
         NetworkManager.getCryptos()?.enqueue(object : Callback<CryptoData?> {
             override fun onResponse(
                 call: Call<CryptoData?>,
@@ -120,13 +135,13 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
                 throwable.printStackTrace()
                 Toast.makeText(this@MainActivity, "Network request error occured, check LOG", Toast.LENGTH_LONG).show()
             }
-        })
+        })*/
     }
 
     private fun refreshData(){
         val daoInstance = database.cryptoCoinDao()
         for(crypto in cryptoData!!.data){
-            if(daoInstance.getCryptoCoin(crypto.symbol) != null) {
+            if(daoInstance.isNotExists(crypto.symbol)) {
                     daoInstance.updatePrice_With_tag_ApiID(
                         crypto.quote.USD.price,
                         crypto.symbol,
@@ -143,5 +158,9 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
             }
         }
         return null
+    }
+
+    override fun onAssetAdded(value: Int) {
+
     }
 }

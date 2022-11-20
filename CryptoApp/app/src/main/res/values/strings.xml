@@ -7,4 +7,6 @@
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
     <string name="new_crypto">New Crypto</string>
+    <string name="add_asset_hint">Add USD</string>
+    <string name="adding_capital">Adding capital in USD</string>
 </resources>
