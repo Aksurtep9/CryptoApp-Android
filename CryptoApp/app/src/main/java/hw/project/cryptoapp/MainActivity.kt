@@ -5,11 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import hw.project.cryptoapp.adapter.CryptoAdapter
-import hw.project.cryptoapp.data.CryptoCoin
-import hw.project.cryptoapp.data.CryptoCoinDatabase
+import hw.project.cryptoapp.data.*
 import hw.project.cryptoapp.databinding.ActivityMainBinding
 import hw.project.cryptoapp.network.CryptoData
 import hw.project.cryptoapp.network.CryptoDataHolder
@@ -18,12 +17,18 @@ import hw.project.cryptoapp.network.NetworkManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
 import kotlin.concurrent.thread
 
-class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener, AddCryptoDialogFragment.AddCryptoDialogListener, CryptoDataHolder {
+class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
+    AddCryptoDialogFragment.AddCryptoDialogListener,
+    AddAssetDialogFragment.AddAssetDialogListener,
+    TransactionDialogFragment.TransactionDialogListener,
+    CryptoDataHolder{
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var database: CryptoCoinDatabase
+    private lateinit var portfolio_database: PortfolioDatabase
     private lateinit var adapter: CryptoAdapter
     private var cryptoData: CryptoData? = null
 
@@ -34,16 +39,19 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         setSupportActionBar(binding.toolbar)
 
         database = CryptoCoinDatabase.getDatabase(applicationContext)
+        portfolio_database = PortfolioDatabase.getDatabase(applicationContext)
         adapter = CryptoAdapter(this, this@MainActivity)
 
 
+
         initFab()
+        initProf()
+        initAsset()
         loadCryptoData()
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
-
         adapter = CryptoAdapter(this, this@MainActivity)
         binding.rvMain.layoutManager = LinearLayoutManager(this)
         binding.rvMain.adapter = adapter
@@ -65,11 +73,36 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         }
     }
 
+    private fun initProf() {
+        binding.portfolio.setOnClickListener {
+            PortfolioFragment().show(supportFragmentManager,PortfolioFragment::class.java.simpleName)
+        }
+    }
+
+    private fun initAsset(){
+        binding.addAsset.setOnClickListener{
+            AddAssetDialogFragment().show(supportFragmentManager, AddAssetDialogFragment::class.java.simpleName)
+        }
+    }
+
     override fun onItemChanged(item: CryptoCoin) {
         thread {
             database.cryptoCoinDao().update(item)
             Log.d("MainActivity", "CryptoItem update was successful")
         }
+    }
+
+    override fun onItemDeleted(item: CryptoCoin) {
+        thread{
+            database.cryptoCoinDao().deleteItem(item)
+        }
+    }
+
+    override fun onTransaction(item: CryptoCoin) {
+
+
+        System.out.println(TransactionDialogFragment.newInstance(item.tag).tag)
+        TransactionDialogFragment.newInstance(item.tag).show(supportFragmentManager, TransactionDialogFragment::class.java.simpleName)
     }
 
     override fun onCryptoAdded(TAG: String?) {
@@ -89,8 +122,10 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         thread {
             val id = database.cryptoCoinDao().insert(coin)
             coin.id = id
+            runOnUiThread {
+                adapter.addItem(coin!!)
+            }
         }
-            adapter.addItem(coin!!)
 
     }
 
@@ -126,7 +161,7 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
     private fun refreshData(){
         val daoInstance = database.cryptoCoinDao()
         for(crypto in cryptoData!!.data){
-            if(daoInstance.getCryptoCoin(crypto.symbol) != null) {
+            if(daoInstance.isNotExists(crypto.symbol)) {
                     daoInstance.updatePrice_With_tag_ApiID(
                         crypto.quote.USD.price,
                         crypto.symbol,
@@ -143,5 +178,17 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
             }
         }
         return null
+    }
+
+    override fun onAssetAdded(value: Int) {
+        thread{
+            portfolio_database.portfolioDao().updateAmount("USD", value.toDouble())
+        }
+    }
+
+    override fun onFinished(percentage: Double, tagCrypto: String, buy: Boolean) {
+        if(buy){
+
+        }
     }
 }

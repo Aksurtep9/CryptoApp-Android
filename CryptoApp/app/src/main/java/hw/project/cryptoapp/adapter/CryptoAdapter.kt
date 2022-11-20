@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import hw.project.cryptoapp.TransactionDialogFragment
 import hw.project.cryptoapp.data.CryptoCoin
 import hw.project.cryptoapp.databinding.ItemCryptoListBinding
 
@@ -21,15 +22,20 @@ class CryptoAdapter(private val listener: CryptoItemClickListener, private val c
         val cryptoItem = items[position]
         holder.binding.tvName.text = cryptoItem.name
         holder.binding.tvTag.text = cryptoItem.tag
-        holder.binding.tvPrice.text = "${cryptoItem.price}"
+        holder.binding.tvPrice.text = String.format("%.3f $", cryptoItem.price)
+
+        holder.binding.ibRemove.setOnClickListener {
+            notifyItemRemoved(position)
+            listener.onItemDeleted(items[position])
+            items.removeAt(position)
+        }
 
         Glide.with(context).load("https://s2.coinmarketcap.com/static/img/coins/64x64/${cryptoItem.apiID}.png")
             .transition(DrawableTransitionOptions().crossFade())
             .into(holder.binding.ivIcon)
 
-        holder.binding.cbIsSelected.setOnCheckedChangeListener { buttonView, isChecked ->
-            cryptoItem.isChecked = isChecked
-            listener.onItemChanged(cryptoItem)
+        holder.binding.cbIsSelected.setOnClickListener{
+            listener.onTransaction(cryptoItem)
         }
     }
 
@@ -48,7 +54,10 @@ class CryptoAdapter(private val listener: CryptoItemClickListener, private val c
 
     interface CryptoItemClickListener {
         fun onItemChanged(item: CryptoCoin)
+        fun onItemDeleted(item: CryptoCoin)
+        fun onTransaction(item: CryptoCoin)
     }
 
     inner class CryptoViewHolder(val binding: ItemCryptoListBinding) : RecyclerView.ViewHolder(binding.root)
+
 }

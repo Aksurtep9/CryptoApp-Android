@@ -19,6 +19,12 @@ interface CryptoCoinDao{
     @Query("SELECT * FROM cryptocoin WHERE tag = :tag")
     fun getCryptoCoin(tag: String): CryptoCoin
 
+    @Query("SELECT (SELECT COUNT(*) FROM cryptocoin WHERE tag =:tag) == 0")
+    fun isNotExists(tag: String): Boolean
+
+    @Query("SELECT price FROM cryptocoin WHERE tag = :tag")
+    fun getPriceWithTag(tag: String): Double
+
     @Update
     fun update(cryptoCoin: CryptoCoin)
 
