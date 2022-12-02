@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">CryptoApp</string>
+    <string name="price">0</string>
+    <string name="TAG">BTC</string>
+    <string name="name" />
+    <string name="new_crypto_hint">symbol</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <string name="new_crypto">New Crypto</string>
+    <string name="add_asset_hint">Add USD</string>
+    <string name="adding_capital">Adding capital in USD</string>
+    <string name="buyButton">BUY</string>
+    <string name="sellButton">SELL</string>
+    <string name="cancelButton">CANCEL</string>
+    <string name="sell_crypto">Buy or Sell crypto</string>
+    <string name="tagOfCrypto">TAG</string>
+</resources>
