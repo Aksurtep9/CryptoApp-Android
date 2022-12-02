@@ -4,11 +4,14 @@ import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import hw.project.cryptoapp.databinding.DialogNewCryptoBinding
 
-class AddCryptoDialogFragment : AppCompatDialogFragment() {
+class AddCryptoDialogFragment : DialogFragment() {
 
     private lateinit var binding: DialogNewCryptoBinding
     private lateinit var listener: AddCryptoDialogListener
@@ -26,6 +29,7 @@ class AddCryptoDialogFragment : AppCompatDialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         return AlertDialog.Builder(requireContext())
             .setTitle(R.string.new_crypto)
             .setView(binding.root)

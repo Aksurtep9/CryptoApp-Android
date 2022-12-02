@@ -1,11 +1,11 @@
 package hw.project.cryptoapp
 
 import android.content.ContentValues.TAG
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import hw.project.cryptoapp.adapter.CryptoAdapter
 import hw.project.cryptoapp.data.*
@@ -17,13 +17,12 @@ import hw.project.cryptoapp.network.NetworkManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import kotlin.concurrent.thread
+
 
 class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
     AddCryptoDialogFragment.AddCryptoDialogListener,
     AddAssetDialogFragment.AddAssetDialogListener,
-    TransactionDialogFragment.TransactionDialogListener,
     CryptoDataHolder{
     private lateinit var binding: ActivityMainBinding
 
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         database = CryptoCoinDatabase.getDatabase(applicationContext)
         portfolio_database = PortfolioDatabase.getDatabase(applicationContext)
         adapter = CryptoAdapter(this, this@MainActivity)
-
 
 
         initFab()
@@ -99,10 +97,11 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
     }
 
     override fun onTransaction(item: CryptoCoin) {
-
-
-        System.out.println(TransactionDialogFragment.newInstance(item.tag).tag)
-        TransactionDialogFragment.newInstance(item.tag).show(supportFragmentManager, TransactionDialogFragment::class.java.simpleName)
+        val showTransactionIntent = Intent()
+        val tranActivity = TransactionActivity()
+        showTransactionIntent.setClass(this@MainActivity, tranActivity.javaClass)
+        showTransactionIntent.putExtra(TransactionActivity.cryptoTag, item.tag)
+        startActivity(showTransactionIntent)
     }
 
     override fun onCryptoAdded(TAG: String?) {
@@ -111,22 +110,23 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         if(data == null){
             Toast.makeText(this, "No such crypto with that Symbol", Toast.LENGTH_SHORT).show()
         }
-        val coin: CryptoCoin = CryptoCoin(
-            id = null,
-            name = data!!.name,
-            tag = data!!.symbol,
-            apiID = data!!.id,
-            price = data!!.quote.USD.price,
-            isChecked = true
-        )
-        thread {
-            val id = database.cryptoCoinDao().insert(coin)
-            coin.id = id
-            runOnUiThread {
-                adapter.addItem(coin!!)
+        else {
+            val coin: CryptoCoin = CryptoCoin(
+                id = null,
+                name = data!!.name,
+                tag = data!!.symbol,
+                apiID = data!!.id,
+                price = data!!.quote.USD.price,
+                isChecked = true
+            )
+            thread {
+                val id = database.cryptoCoinDao().insert(coin)
+                coin.id = id
+                runOnUiThread {
+                    adapter.addItem(coin!!)
+                }
             }
         }
-
     }
 
     override fun getCryptoData(): CryptoData? {
@@ -180,15 +180,11 @@ class MainActivity : AppCompatActivity(), CryptoAdapter.CryptoItemClickListener,
         return null
     }
 
-    override fun onAssetAdded(value: Int) {
+    override fun onAssetAdded(value: Double) {
         thread{
-            portfolio_database.portfolioDao().updateAmount("USD", value.toDouble())
+            portfolio_database.portfolioDao().updateAmount("USD", value)
         }
     }
 
-    override fun onFinished(percentage: Double, tagCrypto: String, buy: Boolean) {
-        if(buy){
 
-        }
-    }
 }
