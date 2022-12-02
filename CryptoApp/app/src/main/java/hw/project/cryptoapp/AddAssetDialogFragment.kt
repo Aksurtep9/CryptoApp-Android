@@ -15,7 +15,7 @@ class AddAssetDialogFragment : AppCompatDialogFragment() {
     private lateinit var listener: AddAssetDialogListener
 
     interface AddAssetDialogListener {
-        fun onAssetAdded(value: Int)
+        fun onAssetAdded(value: Double)
     }
 
     override fun onAttach(context: Context) {
@@ -32,7 +32,7 @@ class AddAssetDialogFragment : AppCompatDialogFragment() {
             .setView(binding.root)
             .setPositiveButton(R.string.ok) { _, _ ->
                 listener.onAssetAdded(
-                    binding.AddAssetDialogEditText.text.toString().toInt()
+                    binding.AddAssetDialogEditText.text.toString().toDouble()
                 )
             }
             .setNegativeButton(R.string.cancel, null)
